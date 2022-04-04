@@ -1,0 +1,51 @@
+version: "3.1"
+
+services:
+  service:
+    container_name: api
+    build: ./
+    command: npm run start
+    restart: always
+  redis:
+    image: 'redis:latest'
+    container_name: redis
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - 'REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL'
+    command:
+      - redis-server
+      - '--bind'
+      - redis
+      - '--port'
+      - '6378'
+    volumes:
+      - 'redis_data:/usr/local/etc/redis/redis.conf'
+    ports:
+      - '6378:6378'
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf.prod:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - service
+  postgres:
+    container_name: postgres
+    image: postgres:13.3-alpine
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+volumes:
+  pgdata:
+  redis_data:
