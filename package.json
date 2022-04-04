@@ -22,10 +22,12 @@
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/microservices": "^8.4.0",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.3",
+    "dotenv": "^16.0.0",
     "pg": "^8.7.3",
     "redis": "^3.1.2",
     "reflect-metadata": "^0.1.13",
