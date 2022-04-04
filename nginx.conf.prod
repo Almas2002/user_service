@@ -1,6 +1,6 @@
 server{
    listen:80;
-   server_name:164.92.76.18;
+   server_name:188.166.78.116;
    location / {
          proxy_pass:http://redis:6378;
    }
