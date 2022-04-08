@@ -92,7 +92,7 @@ export class ProfileService {
       .leftJoin('profile.gender', 'gender')
       .leftJoin('profile.category', 'category')
       .leftJoin('profile.religion', 'religion')
-      .leftJoinAndSelect('profile.avatar','avatar')
+      .leftJoinAndSelect('profile.avatar', 'avatar')
       .andWhere('profile.userId <> :userId', { userId: data.userId })
       .andWhere('profile.block = :block', { block: false })
       .andWhere('gender.id =:id', { id: 1 });
@@ -127,8 +127,8 @@ export class ProfileService {
         secondName: `%${data.search}%`,
       })
         // .andWhere('profile.userId <> :userId', { userId: data.userId })
-        .andWhere('profile.block = :block', { block: false })
-        //.andWhere('gender.id = any', { ids: ['1', '2'] });
+        .andWhere('profile.block = :block', { block: false });
+      //.andWhere('gender.id = any', { ids: ['1', '2'] });
 
     }
     if (data?.hobby && profile.category) {
@@ -147,15 +147,16 @@ export class ProfileService {
     if (!candidateProfile) {
       throw new HttpException({ message: 'такого профиля нету' }, HttpStatus.BAD_REQUEST);
     }
+    let userProfile = await this.profileRepository.findOne({ where: { userId: dto.userId } });
     let profile = await this.likeRepository.findOne({
       where: {
         profile: { id: dto.profileId },
-        likedProfile: { id: dto.id },
+        likedProfile: userProfile,
       },
     });
     let candidate = await this.likeRepository.findOne({
       where: {
-        profile: { id: dto.id },
+        profile: userProfile,
         likedProfile: { id: dto.profileId },
       },
     });
@@ -166,13 +167,13 @@ export class ProfileService {
       profile.mutually = true;
       await this.likeRepository.save(profile);
       return await this.likeRepository.save({
-        profile: { id: dto.id },
+        profile: userProfile,
         likedProfile: { id: dto.profileId },
         mutually: true,
       });
     }
 
-    return await this.likeRepository.save({ profile: { id: dto.id }, likedProfile: { id: dto.profileId } });
+    return await this.likeRepository.save({ profile: userProfile, likedProfile: { id: dto.profileId } });
   }
 
   async blockUser(id: number) {

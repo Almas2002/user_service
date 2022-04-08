@@ -1,4 +1,4 @@
 export class LikeProfileDto {
-  id:number;
+  userId:number;
   profileId:number
 }
